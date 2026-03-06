@@ -1,5 +1,5 @@
 #!/bin/bash
-# Тестирование установки framework
+# Тестирование установки framework (React Frontend Version)
 
 echo "🧪 Тестирование Cursor Optimization Framework"
 echo ""
@@ -19,10 +19,9 @@ echo "=== Структура файлов ==="
 check ".cursorignore"                        "[ -f .cursorignore ]"
 check ".cursor/rules/optimization.mdc"       "[ -f .cursor/rules/optimization.mdc ]"
 check ".cursor/context/base.md"              "[ -f .cursor/context/base.md ]"
-check ".cursor/snapshots/changes.md"         "[ -f .cursor/snapshots/changes.md ]"
-check ".cursor/plans/optimization-plan.md"   "[ -f .cursor/plans/optimization-plan.md ]"
-check ".cursor/plans/tasks/"                 "[ -d .cursor/plans/tasks ]"
-check ".cursor/plans/done/"                  "[ -d .cursor/plans/done ]"
+check ".tasks/"                              "[ -d .tasks ]"
+check ".tasks/todo/"                         "[ -d .tasks/todo ]"
+check ".tasks/done/"                         "[ -d .tasks/done ]"
 check ".cursor/scripts/bash/"               "[ -d .cursor/scripts/bash ]"
 check ".cursor/scripts/prompts/"            "[ -d .cursor/scripts/prompts ]"
 
@@ -36,8 +35,10 @@ for name in \
     05-refactor \
     05b-refactor-complex \
     06-write-unit-tests \
-    07-add-godoc \
+    08-lint-and-fix \
     09-update-readme \
+    10-create-ui-component \
+    11-integrate-logic \
     run-next-task; do
     check "$name.txt" "[ -f .cursor/scripts/prompts/${name}.txt ]"
 done
@@ -46,16 +47,14 @@ echo ""
 echo "=== Bash скрипты ==="
 check "analyze-project-structure.sh" "[ -f .cursor/scripts/bash/analyze-project-structure.sh ]"
 check "find-todos.sh"                "[ -f .cursor/scripts/bash/find-todos.sh ]"
-check "snapshot-state.sh"           "[ -f .cursor/scripts/bash/snapshot-state.sh ]"
-check "check-coverage.sh"           "[ -f .cursor/scripts/bash/check-coverage.sh ]"
 check "Скрипты исполняемы"          "[ -x .cursor/scripts/bash/analyze-project-structure.sh ]"
 
 echo ""
 echo "=== .cursorignore ==="
 check "node_modules/"   "grep -q 'node_modules' .cursorignore"
-check "vendor/"         "grep -q 'vendor/' .cursorignore"
+check "dist/"           "grep -q 'dist/' .cursorignore"
 check ".git/"           "grep -q '.git/' .cursorignore"
-check ".cursor/plans/"  "grep -q '.cursor/plans/' .cursorignore"
+check ".tasks/"         "grep -q '.tasks/' .cursorignore"
 
 echo ""
 echo "=== Функциональный тест ==="
@@ -74,5 +73,5 @@ else
     echo ""
     echo "Следующий шаг:"
     echo "  1. Отредактируй .cursor/context/base.md"
-    echo "  2. В Cursor: промпт 01-analyze-project.txt (Opus)"
+    echo "  2. В чате Cursor введи: Выполни анализ @.cursor/scripts/prompts/01-analyze-project.txt"
 fi

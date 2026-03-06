@@ -41,6 +41,4 @@ htmlcov/
 Thumbs.db
 
 # Cursor - не тянуть в контекст
-.cursor/analysis/
-.cursor/plans/
-.cursor/snapshots/
+.tasks/done/

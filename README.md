@@ -1,21 +1,28 @@
 # Cursor Optimization Framework
 
-Система оптимизации токенов для Cursor IDE.
+Система оптимизации токенов для Cursor IDE, адаптированная для React/Frontend проектов.
 
 ## Ключевая идея
 
 При выполнении каждой задачи в контексте только:
-- `task-NNN.md` — 15-20 строк (одна текущая задача)
-- `file.go` — только нужный файл
+- `task-NNN.md` — файл конкретной задачи (без номеров строк)
+- Целевые файлы `.tsx`/`.ts`
 
-Не весь план целиком. `optimization-plan.md` используется только
+Не весь план целиком. `plan.md` используется только
 для поиска следующей задачи внутри `run-next-task.txt`.
+
+В отличие от бекенд-версии, тут:
+1. Нет привязки к номерам строк.
+2. Нет автоматических git-коммитов на каждую задачу.
+3. Тесты пишутся только по явному флагу `TESTS_REQUIRED: true`.
+4. Глобальный кэш проекта живет и обновляется в `.tasks/project-map.md`.
+5. Задачи и планы вынесены из `.cursor` в отдельную директорию `.tasks`, чтобы системная папка оставалась чистой, а старые таски легко игнорировались.
 
 ## Установка
 
 ```bash
 git clone https://github.com/motokazmin/cursor-optimization-framework
-cd your-project-folder
+cd your-react-project
 bash ../cursor-optimization-framework/setup.sh
 ```
 
@@ -27,21 +34,18 @@ your-project/
 ├── test-framework.sh
 ├── GUIDE.md
 ├── PROCESS.md
-└── .cursor/
-    ├── rules/optimization.mdc
-    ├── context/base.md
-    ├── analysis/                    # создаётся промптом 01
-    ├── plans/
-    │   ├── optimization-plan.md     # индекс задач
-    │   ├── tasks/task-NNN.md        # по одному файлу на задачу
-    │   └── done/task-NNN.md         # выполненные задачи
-    ├── snapshots/changes.md
+├── .tasks/                        # динамические данные и задачи
+│   ├── project-map.md             # глобальный кэш структуры проекта
+│   ├── plan.md                    # индекс задач
+│   ├── todo/task-NNN.md           # задачи к выполнению
+│   └── done/task-NNN.md           # выполненные задачи
+└── .cursor/                       # статичные шаблоны и настройки
+    ├── rules/                     # правила оптимизации и код-стайла
+    ├── context/base.md            # глобальное описание проекта
     └── scripts/
         ├── bash/
         │   ├── analyze-project-structure.sh
-        │   ├── find-todos.sh
-        │   ├── check-coverage.sh
-        │   └── snapshot-state.sh
+        │   └── find-todos.sh
         └── prompts/
             ├── 01-analyze-project.txt
             ├── 02-create-plan.txt
@@ -50,9 +54,8 @@ your-project/
             ├── 05-refactor.txt
             ├── 05b-refactor-complex.txt
             ├── 06-write-unit-tests.txt
-            ├── 07-add-godoc.txt
             ├── 09-update-readme.txt
-            └── run-next-task.txt    ← единственная точка входа
+            └── run-next-task.txt    ← единственная точка входа для тасок
 ```
 
 ## Подробнее

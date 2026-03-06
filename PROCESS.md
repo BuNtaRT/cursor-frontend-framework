@@ -1,14 +1,14 @@
-# Cursor Optimization Framework — Process
+# Cursor Optimization Framework — Process (React Frontend)
 
 ## Установка (один раз)
 
 ```bash
 git clone https://github.com/motokazmin/cursor-optimization-framework
-cd your-project-folder
+cd your-react-project
 bash ../cursor-optimization-framework/setup.sh
 ```
 
-Отредактируй `.cursor/context/base.md` — замени пример на свой проект.
+Отредактируй `.cursor/context/base.md` — укажи детали своего проекта, стек и правила.
 
 ---
 
@@ -16,12 +16,14 @@ bash ../cursor-optimization-framework/setup.sh
 
 ### Фаза 0: Анализ (один раз)
 
-**Промпт 01** | Opus + max thinking | Agent Mode
-→ Cursor сам запустит скрипты и создаст `.cursor/analysis/project-map.md`
+**Промпт 01** | Agent Mode
+Вставь в чат: `@.cursor/scripts/prompts/01-analyze-project.txt`
+→ Cursor прочитает файл, сам запустит bash-скрипты и создаст карту проекта `.tasks/project-map.md`. Эта карта будет обновляться автоматически по мере выполнения задач.
 
-**Промпт 02** | Sonnet БЕЗ thinking | Agent Mode
-→ Создаёт индекс `.cursor/plans/optimization-plan.md`
-  и отдельный файл на каждую задачу в `.cursor/plans/tasks/`
+**Промпт 02** | Agent Mode
+Вставь в чат задачу и ссылку: `Сделай то-то и то-то, используй @.cursor/scripts/prompts/02-create-plan.txt`
+→ Создаёт индекс `.tasks/plan.md`
+  и отдельный файл на каждую мини-задачу в `.tasks/todo/`
 
 ---
 
@@ -29,39 +31,50 @@ bash ../cursor-optimization-framework/setup.sh
 
 Один промпт — `run-next-task.txt` — делает всё:
 
-```
-run-next-task.txt (повторять до конца плана)
+```text
+Выполни @.cursor/scripts/prompts/run-next-task.txt
 ```
 
 Cursor автоматически:
-1. Найдёт первую незавершённую задачу через `grep`
-2. Прочитает файл задачи через `cat`
-3. Прочитает нужный промпт через `cat`
-4. Прочитает целевой файл кода через `cat`
-5. Выполнит задачу по инструкциям промпта
-6. Запустит `snapshot-state.sh` и сделает git commit
-7. Переместит задачу в `done/`, отметит ✅ в индексе
-8. Проверит актуальность следующей задачи по `changes.md`
+1. Найдёт первую незавершённую задачу через индекс.
+2. Прочитает файл задачи.
+3. Прочитает нужный промпт (например рефакторинг или багфикс).
+4. Прочитает целевой файл кода.
+5. Выполнит задачу (напишет тесты ТОЛЬКО если есть флаг `[TESTS_REQUIRED: true]`).
+6. Переместит задачу в `done/`, отметит ✅ в индексе.
 
 ---
 
 ## Таблица промптов (используются внутри run-next-task)
 
-| Промпт | Когда | Модель |
-|--------|-------|--------|
-| `03-fix-simple-bug.txt` | баг, race condition, транзакции | Haiku БЕЗ thinking |
-| `04-create-architecture.txt` | слои handler/service/repository с нуля | Sonnet БЕЗ thinking |
-| `05-refactor.txt` | валидация, разбить функцию, дублирование | Haiku С thinking |
-| `05b-refactor-complex.txt` | интерфейсы, DI, God-object | Sonnet С thinking |
-| `06-write-unit-tests.txt` | unit тесты | Haiku С thinking |
-| `07-add-godoc.txt` | Godoc комментарии | Haiku С thinking |
-| `09-update-readme.txt` | README | Haiku С thinking |
+| Промпт | Когда используется |
+|--------|--------------------|
+| `03-fix-simple-bug.txt` | Локальные баги, лишние ререндеры, опечатки |
+| `04-create-architecture.txt` | Создание новых страниц, слоев, компонентов с нуля |
+| `05-refactor.txt` | Вынос хуков, компонентов, чистка кода |
+| `05b-refactor-complex.txt` | Смена стейт-менеджера, смена роутинга, глобальные хуки |
+| `06-write-unit-tests.txt` | Написание тестов (React Testing Library) |
+| `08-lint-and-fix.txt` | Запуск ESLint/TSC и автоисправление ошибок |
+| `09-update-readme.txt` | Обновление README и карты проекта по завершении задач |
+| `10-create-ui-component.txt` | Верстка UI-компонентов по макету (без API и бизнес-логики) |
+| `11-integrate-logic.txt` | Подключение API и стейта к готовому UI (без изменения верстки) |
+
+---
+
+### Фаза Финал: Обновление Кэша и Документации
+
+Когда все таски выполнены, отправь в чат:
+
+```text
+Обнови доки по @.cursor/scripts/prompts/09-update-readme.txt
+```
+Cursor прочитает папку `.tasks/done/` и обновит глобальную карту проекта `.tasks/project-map.md`, чтобы в следующий раз тебе не нужно было делать "Фазу 0" заново!
 
 ---
 
 ## Признаки что всё работает
 
-- При выполнении задачи AI видит только 1 task файл, не весь план
-- После выполнения файл задачи переехал в `done/`
-- В `optimization-plan.md` задача отмечена ✅
-- Cursor Settings → Usage: баг ~$0.03, тесты ~$0.18
+- При выполнении задачи AI видит только 1 файл таски, не весь план.
+- Нет лишних автокоммитов на каждый чих.
+- После выполнения файл задачи переехал в `done/`.
+- В `plan.md` задача отмечена ✅.
