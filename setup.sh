@@ -23,7 +23,6 @@ cp "$SCRIPT_DIR/cursor-folder/rules/"*                 ./.cursor/rules/
 cp "$SCRIPT_DIR/cursor-folder/context/base.md"         ./.cursor/context/
 cp "$SCRIPT_DIR/cursor-folder/scripts/bash/"*.sh       ./.cursor/scripts/bash/
 cp "$SCRIPT_DIR/cursor-folder/scripts/prompts/"*.txt   ./.cursor/scripts/prompts/
-cp "$SCRIPT_DIR/PROCESS.md"                            ./PROCESS.md
 cp "$SCRIPT_DIR/GUIDE.md"                              ./GUIDE.md
 cp "$SCRIPT_DIR/test-framework.sh"                     ./test-framework.sh
 
